@@ -1,0 +1,45 @@
+{
+    "name": "atcoder-ubuntu24-python313-codon",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.13"
+        },
+        "ghcr.io/devcontainers/features/node": {
+            "version": "22"
+        },
+        "ghcr.io/devcontainers/features/git": {
+            "version": "latest"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "charliermarsh.ruff",
+                "github.copilot.nextEditSuggestions.enabled": false
+            }
+        },
+        "extensions": [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "charliermarsh.ruff"
+        ]
+    },
+    "remoteUser": "vscode",
+    "updateContentCommand": "bash .devcontainer/scripts/install_codon.sh && bash .devcontainer/scripts/setup_oj_acc.sh && bash .devcontainer/scripts/make_templates.sh && bash .devcontainer/scripts/set_codon_python.sh && bash .devcontainer/scripts/vendor_aclp.sh",
+    "postCreateCommand": "echo 'Devcontainer setup done.'",
+    "containerEnv": {
+        "PIPX_BIN_DIR": "/home/vscode/.local/bin",
+        "PIPX_HOME": "/home/vscode/.local/pipx",
+        "PATH": "/home/vscode/.local/bin:/home/vscode/.codon/bin:${PATH}",
+        "CODON_VERSION": "0.19.3"
+    },
+    "mounts": [
+        "source=${localEnv:HOME}/.config/atcoder-cli,target=/home/vscode/.config/atcoder-cli,type=bind,consistency=cached"
+    ]
+}

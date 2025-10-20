@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu-24.04
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ca-certificates curl wget git build-essential \
+    bash-completion unzip zip jq locales \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN sed -i 's/# *ja_JP.UTF-8/ja_JP.UTF-8/' /etc/locale.gen && locale-gen
+ENV LANG=ja_JP.UTF-8 LANGUAGE=ja_JP:ja LC_ALL=ja_JP.UTF-8
+
+USER vscode
+
+ENV PIPX_HOME=/home/vscode/.local/pipx
+ENV PIPX_BIN_DIR=/home/vscode/.local/bin
+ENV PATH=${PIPX_BIN_DIR}:/home/vscode/.codon/bin:${PATH}
