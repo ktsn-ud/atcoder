@@ -22,13 +22,13 @@
                 "editor.formatOnSave": true,
                 "editor.defaultFormatter": "charliermarsh.ruff",
                 "github.copilot.nextEditSuggestions.enabled": false
-            }
-        },
-        "extensions": [
-            "ms-python.python",
-            "ms-python.vscode-pylance",
-            "charliermarsh.ruff"
-        ]
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "charliermarsh.ruff"
+            ]
+        }
     },
     "remoteUser": "vscode",
     "updateContentCommand": "bash .devcontainer/scripts/install_codon.sh && bash .devcontainer/scripts/setup_oj_acc.sh",
@@ -36,7 +36,8 @@
     "containerEnv": {
         "PIPX_BIN_DIR": "/home/vscode/.local/bin",
         "PIPX_HOME": "/home/vscode/.local/pipx",
-        "CODON_VERSION": "0.19.3"
+        "CODON_VERSION": "0.19.3",
+        "CODON_PYTHON": "/usr/local/python/3.13.9/lib/python3.13/config-3.13-aarch64-linux-gnu/libpython3.13.a"
     },
     "mounts": [
         "source=${localEnv:HOME}/.config/atcoder-cli,target=/home/vscode/.config/atcoder-cli,type=bind,consistency=cached"
