@@ -31,12 +31,11 @@
         ]
     },
     "remoteUser": "vscode",
-    "updateContentCommand": "bash .devcontainer/scripts/install_codon.sh && bash .devcontainer/scripts/setup_oj_acc.sh && bash .devcontainer/scripts/make_templates.sh && bash .devcontainer/scripts/set_codon_python.sh && bash .devcontainer/scripts/vendor_aclp.sh",
+    "updateContentCommand": "bash .devcontainer/scripts/install_codon.sh && bash .devcontainer/scripts/setup_oj_acc.sh",
     "postCreateCommand": "echo 'Devcontainer setup done.'",
     "containerEnv": {
         "PIPX_BIN_DIR": "/home/vscode/.local/bin",
         "PIPX_HOME": "/home/vscode/.local/pipx",
-        "PATH": "/home/vscode/.local/bin:/home/vscode/.codon/bin:${PATH}",
         "CODON_VERSION": "0.19.3"
     },
     "mounts": [
