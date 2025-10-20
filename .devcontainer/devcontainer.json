@@ -40,6 +40,7 @@
         "CODON_PYTHON": "/usr/local/python/3.13.9/lib/python3.13/config-3.13-aarch64-linux-gnu/libpython3.13.a"
     },
     "mounts": [
-        "source=${localEnv:HOME}/.config/atcoder-cli,target=/home/vscode/.config/atcoder-cli,type=bind,consistency=cached"
+        "source=${localWorkspaceFolder}/.config/atcoder-cli-nodejs,target=/home/vscode/.config/atcoder-cli-nodejs,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/.config/online-judge-tools,target=/home/vscode/.local/share/online-judge-tools,type=bind,consistency=cached"
     ]
 }
