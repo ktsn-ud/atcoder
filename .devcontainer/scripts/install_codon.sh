@@ -20,7 +20,7 @@ fi
 
 # インストール
 mkdir -p "$INSTALL_DIR"
-curl -L "https://github.com/exaloop/codon/releases/download/v${CODON_VERSION}/codon-linux-x86_64.tar.gz" \
+curl -L "https://github.com/exaloop/codon/releases/download/v${CODON_VERSION}/codon-linux-aarch64.tar.gz" \
     -o /tmp/codon.tar.gz
 tar -xzf /tmp/codon.tar.gz -C "$INSTALL_DIR" --strip-components=1
 rm /tmp/codon.tar.gz
