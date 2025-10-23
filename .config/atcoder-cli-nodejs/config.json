@@ -2,7 +2,7 @@
 	"oj-path": "/usr/local/py-utils/bin/oj",
 	"default-contest-dirname-format": "{ContestID}",
 	"default-task-dirname-format": "{tasklabel}",
-	"default-test-dirname-format": "tests",
+	"default-test-dirname-format": "test",
 	"default-task-choice": "next",
 	"default-template": "py"
 }
