@@ -1,0 +1,17 @@
+{
+    "int list": {
+        "scope": "python",
+        "prefix": "li",
+        "body": "[int(x) for x in input().split()]",
+    },
+    "string": {
+        "scope": "python",
+        "prefix": "st",
+        "body": "input().strip()",
+    },
+    "string list": {
+        "scope": "python",
+        "prefix": "sl",
+        "body": "input().strip().split()",
+    }
+}
