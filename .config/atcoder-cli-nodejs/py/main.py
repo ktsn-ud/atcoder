@@ -1,3 +1,7 @@
+def print_list(arr: list):
+    print(" ".join(arr))
+
+
 def main():
     pass
 
