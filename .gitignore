@@ -218,4 +218,8 @@ __marimo__/
 .DS_Store
 Thumbs.db
 
+# atcoder
 atcoder/
+test/
+a.out
+contest.acc.json
