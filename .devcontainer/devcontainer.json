@@ -37,8 +37,7 @@
         "PIPX_BIN_DIR": "/home/vscode/.local/bin",
         "PIPX_HOME": "/home/vscode/.local/pipx",
         "CODON_VERSION": "0.19.3",
-        "PYPY_VERSION": "7.3.16",
-        "PATH": "${containerWorkspaceFolder}:${containerEnv:PATH}"
+        "PYPY_VERSION": "7.3.16"
     },
     "mounts": [
         "source=${localWorkspaceFolder}/.config/atcoder-cli-nodejs,target=/home/vscode/.config/atcoder-cli-nodejs,type=bind,consistency=cached",
