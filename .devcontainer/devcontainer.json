@@ -31,7 +31,7 @@
         }
     },
     "remoteUser": "vscode",
-    "updateContentCommand": "bash .devcontainer/scripts/install_codon.sh && bash .devcontainer/scripts/setup_oj_acc.sh",
+    "updateContentCommand": "bash .devcontainer/scripts/install_codon.sh && bash .devcontainer/scripts/setup_oj_acc.sh && python3 -m pip install --user --no-cache-dir -r requirements.txt",
     "postCreateCommand": "echo 'Devcontainer setup done.'",
     "containerEnv": {
         "PIPX_BIN_DIR": "/home/vscode/.local/bin",
