@@ -7,8 +7,14 @@ from python import subprocess
 from python import termcolor
 colored = termcolor.colored
 
+languages = [
+    "pypy",
+    "codon",
+]
+
 contest_id: Optional[str] = None
 problem: Optional[str] = None
+language = "pypy"
 
 WORKSPACE_DIR = "/workspaces/atcoder/"
 
@@ -46,6 +52,22 @@ def set_problem(new_problem: str):
     SOURCE_PATH = f"{WORKSPACE_DIR}{contest_id}/{problem}/main.py"
     subprocess.run(["code", SOURCE_PATH])
 
+
+def set_language():
+    global language
+
+    print("\nAvailable languages:\n")
+    for lng in languages:
+        print(f" - {lng}")
+
+    while True:
+        new_lang = input("\nYour choice: ")
+        if new_lang in languages:
+            language = new_lang
+            print(colored(f"Language set to < {language} >!\n", "green"))
+            break
+        else:
+            print(colored(f"< {new_lang} > is not available."))
 
 # --- phases ---
 
@@ -126,25 +148,49 @@ def during_contest():
                 break
 
     def run_test():
-        subprocess.run(
-            ["codon", "build", f"{WORKING_DIR}{problem}/main.py"]
-        )
-        subprocess.run(
-            ["oj", "t", "-c", "'./main'"],
-            cwd=f"{WORKING_DIR}{problem}/"
-        )
+        if language == 'codon':
+            print(
+                colored(f"codon build {WORKING_DIR}{problem}/main.py", "dark_grey"))
+            subprocess.run(
+                ["codon", "build", f"{WORKING_DIR}{problem}/main.py"]
+            )
+
+            print(colored("oj t -c './main", "dark_grey"))
+            subprocess.run(
+                ["oj", "t", "-c", "./main"],
+                cwd=f"{WORKING_DIR}{problem}/"
+            )
+
+        elif language == 'pypy':
+            print(colored("oj t -c 'pypy3 ./main.py'", "dark_grey"))
+            subprocess.run(
+                ["oj", "t", "-c", "pypy3 ./main.py"],
+                cwd=f"{WORKING_DIR}{problem}/"
+            )
 
     def debug():
-        subprocess.run(
-            ["codon", "build", f"{WORKING_DIR}{problem}/main.py"]
-        )
-        subprocess.run(
-            ["./main"],
-            cwd=f"{WORKING_DIR}{problem}/"
-        )
+        if language == "codon":
+            print(
+                colored(f"codon build {WORKING_DIR}{problem}/main.py", "dark_grey"))
+            subprocess.run(
+                ["codon", "build", f"{WORKING_DIR}{problem}/main.py"]
+            )
+
+            print(colored("./main", "dark_grey"))
+            subprocess.run(
+                ["./main"],
+                cwd=f"{WORKING_DIR}{problem}/"
+            )
+
+        elif language == "pypy":
+            print(colored("pypy3 ./main.py", "dark_grey"))
+            subprocess.run(
+                ["pypy3" "./main.py"],
+                cwd=f"{WORKING_DIR}{problem}/"
+            )
 
     while True:
-        cmd = input(f"\n[problem {problem}] > ")
+        cmd = input(f"\n[problem {problem} ({language})] > ")
 
         if cmd == "exit":
             break
@@ -181,6 +227,9 @@ def during_contest():
 
         elif cmd == "d":
             debug()
+
+        elif cmd == "l":
+            set_language()
 
         elif cmd == "h":
             print("exit: exit, n: next problem, t: test")
