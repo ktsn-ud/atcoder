@@ -1,13 +1,14 @@
+from typing import Optional
+from python import os
 import sys
-import os
 import datetime
 import time
-from zoneinfo import ZoneInfo
-import subprocess
-from termcolor import colored
+from python import subprocess
+from python import termcolor
+colored = termcolor.colored
 
-contest_id: str | None = None
-problem: str | None = None
+contest_id: Optional[str] = None
+problem: Optional[str] = None
 
 WORKSPACE_DIR = "/workspaces/atcoder/"
 
@@ -24,7 +25,7 @@ def exit_gracefully():
 
 
 def get_time_from_str(time_str: str) -> datetime.time:
-    h, m = map(int, time_str.split(":"))
+    h, m = list(map(int, time_str.split(":")))
     return datetime.time(h, m)
 
 
@@ -83,7 +84,7 @@ def init_new_contest(starting_time="21:00"):
     print("Waiting for contest to start...")
     parsed_starting_time = get_time_from_str(starting_time)
     while True:
-        now = datetime.datetime.now(ZoneInfo("Asia/Tokyo"))
+        now = datetime.datetime.now()
         if now.time() >= parsed_starting_time:
             print(colored("Contest has started!", "green"))
             sep()
@@ -113,7 +114,7 @@ def during_contest():
 
     # set problem
     if problem is None:
-        dir_list = sorted([f for f in os.listdir(
+        dir_list = sorted([str(f) for f in os.listdir(
             WORKING_DIR) if os.path.isdir(f"{WORKING_DIR}{f}")])
 
         show_existing_problems(dir_list)
@@ -163,7 +164,7 @@ def during_contest():
 
         elif cmd == "c":
             dir_list = sorted([
-                f for f in os.listdir(WORKING_DIR) if os.path.isdir(f"{WORKING_DIR}{f}")
+                str(f) for f in os.listdir(WORKING_DIR) if os.path.isdir(f"{WORKING_DIR}{f}")
             ])
             show_existing_problems(dir_list)
 
