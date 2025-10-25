@@ -7,6 +7,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 
 RUN sed -i 's/# *ja_JP.UTF-8/ja_JP.UTF-8/' /etc/locale.gen && locale-gen
 ENV LANG=ja_JP.UTF-8 LANGUAGE=ja_JP:ja LC_ALL=ja_JP.UTF-8
+RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+    && echo "Asia/Tokyo" > /etc/timezone
+ENV TZ=Asia/Tokyo
 
 RUN mkdir -p /home/vscode/.local/bin \
     /home/vscode/.local/pipx \
