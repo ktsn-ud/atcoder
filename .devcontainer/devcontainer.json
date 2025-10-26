@@ -31,16 +31,12 @@
         }
     },
     "remoteUser": "vscode",
-    "updateContentCommand": "bash .devcontainer/scripts/install_python && bash .devcontainer/scripts/install_pypy.sh && bash .devcontainer/scripts/install_codon.sh && bash .devcontainer/scripts/setup_oj_acc.sh && python3 -m pip install --user --no-cache-dir -r requirements.txt",
+    "updateContentCommand": "bash .devcontainer/scripts/install_python && bash .devcontainer/scripts/install_pypy.sh && bash .devcontainer/scripts/install_codon.sh && python3 -m pip install --user --no-cache-dir -r requirements.txt",
     "postCreateCommand": "echo 'Devcontainer setup done.'",
     "containerEnv": {
         "PIPX_BIN_DIR": "/home/vscode/.local/bin",
         "PIPX_HOME": "/home/vscode/.local/pipx",
         "CODON_VERSION": "0.19.3",
         "PYPY_VERSION": "7.3.16"
-    },
-    "mounts": [
-        "source=${localWorkspaceFolder}/.config/atcoder-cli-nodejs,target=/home/vscode/.config/atcoder-cli-nodejs,type=bind,consistency=cached",
-        "source=${localWorkspaceFolder}/.config/online-judge-tools,target=/home/vscode/.local/share/online-judge-tools,type=bind,consistency=cached"
-    ]
+    }
 }

@@ -17,7 +17,6 @@ ENV TZ=Asia/Tokyo
 RUN mkdir -p /home/vscode/.local/bin \
     /home/vscode/.local/pipx \
     /home/vscode/.local/share/man \
-    /home/vscode/.local/share/online-judge-tools \
  && chown -R vscode:vscode /home/vscode/.local
 
 USER vscode
