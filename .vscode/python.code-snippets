@@ -13,5 +13,10 @@
         "scope": "python",
         "prefix": "sl",
         "body": "input().strip().split()",
+    },
+    "int mapping": {
+        "scope": "python",
+        "prefix": "ma",
+        "body": "map(int, input().split())",
     }
 }

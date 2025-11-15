@@ -220,7 +220,8 @@ Thumbs.db
 
 # atcoder
 atcoder/
-test/
+tests/
 a.out
 main
 contest.acc.json
+abc*/
