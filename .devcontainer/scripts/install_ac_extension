@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+OWNER="ktsn-ud"
+REPO="ac-companion-python"
+EXT_PUBLISHER="ktsn-ud"          # package.json の "publisher"
+EXT_NAME="ac-companion-python"   # package.json の "name"
+
+: "${AC_EXT_VERSION:?AC_EXT_VERSION is required}"
+
+VSIX_URL="https://github.com/${OWNER}/${REPO}/releases/download/v${AC_EXT_VERSION}/${EXT_NAME}-${AC_EXT_VERSION}.vsix"
+VSIX_FILE="/tmp/${EXT_NAME}-${AC_EXT_VERSION}.vsix"
+
+# VS Code Server CLI を特定
+SERVER_BASE="$HOME/.vscode-server/bin"
+if [ ! -d "$SERVER_BASE" ]; then
+  SERVER_BASE="$HOME/.vscode-server-insiders/bin"
+fi
+if [ ! -d "$SERVER_BASE" ]; then
+  echo "[vsix] VS Code Server not initialized yet. Attach once more."
+  exit 0
+fi
+
+SERVER_DIR="$(ls -dt "$SERVER_BASE"/* | head -n1)"
+CODE_CLI="$SERVER_DIR/bin/code-server"
+if [ ! -x "$CODE_CLI" ]; then
+  echo "[vsix] code-server not found"
+  exit 1
+fi
+
+# すでに同バージョンが入っていればスキップ
+INSTALLED_VER="$("$CODE_CLI" --list-extensions --show-versions | awk -v p="${EXT_PUBLISHER}.${EXT_NAME}@" '$0 ~ p { sub(/^.*@/,""); print; }' | head -n1 || true)"
+if [ "$INSTALLED_VER" = "$AC_EXT_VERSION" ]; then
+  echo "[vsix] ${EXT_PUBLISHER}.${EXT_NAME} is already ${AC_EXT_VERSION}. Skip."
+  exit 0
+fi
+
+echo "[vsix] Downloading ${VSIX_URL}"
+curl -fsSL -o "$VSIX_FILE" "$VSIX_URL"
+
+echo "[vsix] Installing ${EXT_NAME} ${AC_EXT_VERSION} ..."
+"$CODE_CLI" --install-extension "$VSIX_FILE" --force
+
+echo "[vsix] Done. Now at ${AC_EXT_VERSION}."
