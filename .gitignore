@@ -220,6 +220,7 @@ Thumbs.db
 
 # atcoder
 atcoder/
+ac-library/
 tests/
 a.out
 main
