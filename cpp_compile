@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# C++コンパイルスクリプト (ac-companion用)
+# Usage: cpp_compile <contest_id> <task_id>
+
+set -euo pipefail
+
+if [ $# -ne 2 ]; then
+    echo "Usage: cpp_compile <contest_id> <task_id>" >&2
+    exit 1
+fi
+
+CONTEST_ID="$1"
+TASK_ID="$2"
+WORKSPACE_DIR="${WORKSPACE_DIR:-/workspaces/atcoder}"
+TASK_DIR="$WORKSPACE_DIR/$CONTEST_ID/$TASK_ID"
+
+if [ ! -f "$TASK_DIR/main.cpp" ]; then
+    echo "Error: main.cpp not found in $TASK_DIR" >&2
+    exit 1
+fi
+
+cd "$TASK_DIR"
+
+INSTALL_DIR="/opt/atcoder/gcc"
+COMPILE_FLAGS=(
+    "-DATCODER"
+    "-DONLINE_JUDGE"
+    "-I$INSTALL_DIR/include"
+    "-O2"
+    "-std=gnu++23"
+    "-march=native"
+)
+
+echo "[cpp_compile] Compiling main.cpp in $TASK_DIR"
+g++ main.cpp -o a.out "${COMPILE_FLAGS[@]}"
+
+if [ -f "./a.out" ]; then
+    echo "[cpp_compile] Compilation successful: a.out"
+    exit 0
+else
+    echo "[cpp_compile] Compilation failed" >&2
+    exit 1
+fi
