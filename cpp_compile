@@ -23,8 +23,6 @@ cd "$TASK_DIR"
 
 INSTALL_DIR="/opt/atcoder/gcc"
 COMPILE_FLAGS=(
-    "-DATCODER"
-    "-DONLINE_JUDGE"
     "-I$INSTALL_DIR/include"
     "-O2"
     "-std=gnu++23"

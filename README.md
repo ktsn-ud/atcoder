@@ -73,7 +73,7 @@ pypy3 main.py < tests/1.in
 ./cpp_run abc431 abc431_a tests/1.in
 ```
 
-コンパイルフラグ: `-DATCODER -DONLINE_JUDGE -I/opt/atcoder/gcc/include -O2 -std=gnu++23 -march=native`
+コンパイルフラグ: `-I/opt/atcoder/gcc/include -O2 -std=gnu++23 -march=native`
 
 ## スクリプト詳細
 
