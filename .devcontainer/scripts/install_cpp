@@ -58,13 +58,14 @@ echo "[install_cpp] installing GCC"
 ${SUDO} make -j"${PARALLEL}" install-strip
 
 ACLIB_SRC="${WORKSPACE_DIR}/ac-library"
-if [ -d "${ACLIB_SRC}/atcoder" ]; then
+if [ -d "${ACLIB_SRC}" ]; then
     echo "[install_cpp] installing ac-library from ${ACLIB_SRC}"
-    ${SUDO} mkdir -p "${AC_INSTALL_DIR}/include"
+    ${SUDO} mkdir -p "${AC_INSTALL_DIR}/include/atcoder"
     ${SUDO} rm -rf "${AC_INSTALL_DIR}/include/atcoder"
-    ${SUDO} cp -r "${ACLIB_SRC}/atcoder" "${AC_INSTALL_DIR}/include/"
+    ${SUDO} mkdir -p "${AC_INSTALL_DIR}/include/atcoder"
+    ${SUDO} cp -r "${ACLIB_SRC}"/* "${AC_INSTALL_DIR}/include/atcoder/"
 else
-    echo "[install_cpp] warning: ac-library not found at ${ACLIB_SRC}/atcoder" >&2
+    echo "[install_cpp] warning: ac-library not found at ${ACLIB_SRC}" >&2
 fi
 
 ${SUDO} mkdir -p /etc/atcoder
@@ -74,3 +75,21 @@ echo "[install_cpp] cleaning temp directory"
 ${SUDO} rm -rf "${AC_TEMP_DIR}"
 
 echo "[install_cpp] completed: $("${AC_INSTALL_DIR}/bin/g++" --version | head -n 1)"
+
+# Precompile bits/stdc++.h with matching compiler flags
+echo "[install_cpp] precompiling bits/stdc++.h"
+STDC_HEADER=$(find "${AC_INSTALL_DIR}/include/c++/${GCC_VERSION}" -name "stdc++.h" -path "*/bits/stdc++.h" | head -n 1)
+if [ -n "${STDC_HEADER}" ]; then
+    STDC_DIR=$(dirname "${STDC_HEADER}")
+    echo "[install_cpp] found stdc++.h at ${STDC_HEADER}"
+    cd "${STDC_DIR}"
+    ${SUDO} "${AC_INSTALL_DIR}/bin/g++" -std=gnu++23 -O2 -march=native stdc++.h
+    if [ -f "${STDC_DIR}/stdc++.h.gch" ]; then
+        echo "[install_cpp] successfully created ${STDC_DIR}/stdc++.h.gch"
+        ${SUDO} chmod 644 "${STDC_DIR}/stdc++.h.gch"
+    else
+        echo "[install_cpp] warning: failed to create precompiled header" >&2
+    fi
+else
+    echo "[install_cpp] warning: bits/stdc++.h not found" >&2
+fi
