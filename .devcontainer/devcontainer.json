@@ -37,7 +37,10 @@
         "PIPX_HOME": "/home/vscode/.local/pipx",
         "CODON_VERSION": "0.19.3",
         "PYPY_VERSION": "7.3.16",
-        "AC_EXT_VERSION": "1.0.0"
+        "AC_EXT_VERSION": "1.1.3"
+    },
+    "remoteEnv": {
+        "PYTHONPATH": "${containerWorkspaceFolder}:${PYTHONPATH}"
     },
     "forwardPorts": [10043],
     "postAttachCommand": "bash .devcontainer/scripts/install_ac_extension"

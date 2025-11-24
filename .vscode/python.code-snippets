@@ -1,4 +1,9 @@
 {
+    "int": {
+        "scope": "python",
+        "prefix": "ii",
+        "body": "int(input())",
+    },
     "int list": {
         "scope": "python",
         "prefix": "li",
