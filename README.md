@@ -1,106 +1,243 @@
-# AtCoder環境（C++, Python）
+# AtCoder 環境（C++, Python）
 
-このリポジトリは AtCoder のコンテストを快適に進めるためのワークスペースです。VS Code Dev Container を前提に、C++ (GCC 15.2.0 + ac-library 1.6) と Python (CPython 3.13 / PyPy 3.11) をまとめて導入し、ac-companion 拡張と連携するシンプルなビルド・実行フローを提供します。
+このリポジトリは AtCoder のコンテストに特化した開発環境です。VS Code Dev Container を使用して、C++ (GCC 15.2.0 + ac-library) と Python (CPython 3.13 / PyPy 3.10) の双方を統合し、ac-companion 拡張との連携によるスムーズなビルド・実行フローを提供します。
 
 ## 推奨環境: Dev Container
 
 ### 前提条件
-- Docker Desktop / nerdctl などコンテナ実行環境
+
+- Docker Desktop または同等のコンテナ実行環境
 - Visual Studio Code
-- VS Code 拡張: Remote - Containers (Dev Containers)
+- VS Code 拡張: [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
-### 使い方
-1. このリポジトリをクローンし、VS Code でフォルダーを開く。
-2. コマンドパレットで「Dev Containers: Reopen in Container」を実行。
-3. `.devcontainer/devcontainer.json` に基づきコンテナがビルドされると、自動的にセットアップ用スクリプトが順番に実行されます（`updateContentCommand`）。
+### セットアップ
 
-### 自動で導入される主なツール
-- CPython 3.13（Dev Container feature）
-- PyPy 7.3.16（`.devcontainer/scripts/install_pypy`）
-- GCC 15.2.0 + ac-library 1.6（`.devcontainer/scripts/install_cpp`）
-- `python3 -m pip install --user -r requirements.txt`
-- ac-companion-python 拡張 v1.1.3（`.devcontainer/scripts/install_ac_extension`）
-
-> Dev Container 内では `/workspaces/atcoder/` がワークスペース直下の絶対パスになります。`WORKSPACE_DIR` を参照するスクリプトもこのパスを前提にしています。
-
-
-## ローカル環境で再現する場合
-
-Dev Container を使わない場合は、以下を参考にホスト OS 上で同等環境を用意できます。
-
-1. 依存ツールを用意する  
-   - build-essential / curl / zlib など Python ソースビルドに必要なパッケージ  
-   - GCC ビルドに必要なツール (git, cmake, lld, ninja-build, bison, flex, gmp/mpfr/mpc 系ライブラリなど)  
-   - Node.js (v22 目安)
-2. リポジトリ直下でスクリプトを順に実行する
+1. このリポジトリをクローンし、VS Code でフォルダを開く
    ```bash
-   bash .devcontainer/scripts/install_pypy          # 非 root ユーザーで実行
-   sudo AC_INSTALL_DIR=/opt/atcoder/gcc bash .devcontainer/scripts/install_cpp
-   python3 -m pip install --user -r requirements.txt
+   git clone <repository-url>
+   code atcoder
    ```
-3. シェルの再読み込み後、`python3`, `pypy3`, `g++` がパスに通っていることを確認する。
 
-`WORKSPACE_DIR` が `/workspaces/atcoder/` と異なる場合は、必要に応じてスクリプト内のデフォルトを上書きしてください。
+2. コマンドパレット（Cmd/Ctrl + Shift + P）で「Dev Containers: Reopen in Container」を実行
+
+3. コンテナ構築中に自動実行されるセットアップスクリプト（`updateContentCommand`）で以下がインストールされます:
+   - PyPy 3.10 (v7.3.16)
+   - GCC 15.2.0 + ac-library
+   - Python 依存パッケージ
+   - ac-companion 拡張 v2.0.0
+
+> Dev Container 内では `/workspaces/atcoder/` がワークスペース根となります。スクリプトはこのパスを前提に動作します。
 
 ## リポジトリ構成
 
-- `cpp_compile` / `cpp_run`：C++ のビルド・実行スクリプト（ac-companion から呼び出し可能）
-- `.config/templates/main.cpp` / `.config/templates/main.py`：提出用テンプレート
-- `.devcontainer/`：Dev Container 定義とセットアップスクリプト群
-- `ac-library/`：AtCoder Library ソース（コンテナ構築時に `/opt/atcoder/gcc/include` へコピー）
-- `requirements.txt`：Python 依存パッケージ
+```
+.devcontainer/          # Dev Container 設定
+  ├── Dockerfile        # コンテナイメージ定義
+  ├── devcontainer.json # Dev Container メタデータ
+  └── scripts/
+      ├── install_pypy        # PyPy インストール
+      ├── install_cpp         # GCC + ac-library インストール
+      └── install_ac_extension # ac-companion 拡張インストール
 
-## `contest` コマンドの使い方
+ac-library/             # AtCoder Library (ヘッダファイル)
 
-1. ルートディレクトリで実行  
-   ```bash
-   ./contest
-   ```
-   パスを通している場合は単に `contest` と入力すれば起動します。
+atcoder/                # Python atcoder ライブラリ
 
-2. メニューの概要
-   - `1. Start new contest`  
-     コンテスト ID（例: `abc370`）を入力すると `acc new <contest_id>` を実行し、所定時刻まで待機してから問題を生成します。開始時刻はデフォルト `21:00`、任意に上書き可能です。
-   - `2. Resume ongoing contest`  
-     現在の `contest_id` を維持したまま操作メニュー（後述）に入ります。
-   - `3. Resume existing contest`  
-     既存ディレクトリからコンテスト ID を指定し直して再開できます。
-   - `0. Exit`  
-     終了します。
+cpp_compile             # C++ コンパイルスクリプト
+cpp_run                 # C++ 実行スクリプト
 
-3. コンテスト中メニュー（`during_contest()`）
-   - 初回は `acc new` で生成された問題一覧が表示され、対象問題を入力すると VS Code がそのファイルを開きます。
-   - 入力プロンプトでは以下のショートカットが利用できます:
-     - `n`：`acc add` を実行して次の問題を取得し、自動的に開きます。
-     - `c`：既存問題一覧から移動したい問題名を入力します。
-     - `t`：言語設定に応じてサンプルテストを実行します（Python は `pypy3 ./main.py`、C++ は `cpp_compile` → `cpp_run`）。
-     - `d`：提出前の実行確認（Python はインタプリタ実行、C++ はビルド済みバイナリを実行）。
-     - `l`：使用する実行環境の切り替え（例: PyPy / CPython / C++）。
-     - `h`：ヘルプ（`exit`, `n`, `t` などの説明）。
-     - `exit`：このメニューを抜けて最初の画面に戻ります。
+abc431/, abc432/, ...   # コンテスト問題ディレクトリ
 
-4. テストと提出
-   - テンプレートから生成した `tests/` ディレクトリ内の入出力を使い、`t` コマンドや ac-companion で検証します。
-   - 必要に応じて `acc submit` などで提出してください（自動提出は行いません）。
+requirements.txt        # Python 依存パッケージ
+```
 
-## C++ 用コマンド
+## 開発フロー
 
-- `cpp_compile <contest_id> <task_id>`  
-  `main.cpp` を `g++ -std=gnu++23 -O2 -march=native` でコンパイルし、`a.out` を生成します。
-- `cpp_run <contest_id> <task_id> [input_file]`  
-  `a.out` を実行します。`input_file` を渡した場合はその内容を標準入力に流し込みます。
+### Python での開発
 
-どちらもデフォルトで `/workspaces/atcoder/<contest>/<task>` を参照し、ac-companion から直接呼び出すことを前提にしています。
+```bash
+# 通常実行（CPython 3.13）
+python3 main.py < tests/1.in
+
+# PyPy での高速実行
+pypy3 main.py < tests/1.in
+```
+
+### C++ での開発
+
+```bash
+# コンパイル（ac-companion から自動実行）
+./cpp_compile abc431 abc431_a
+
+# 実行
+./cpp_run abc431 abc431_a tests/1.in
+```
+
+コンパイルフラグ: `-DATCODER -DONLINE_JUDGE -I/opt/atcoder/gcc/include -O2 -std=gnu++23 -march=native`
+
+## スクリプト詳細
+
+### `cpp_compile <contest_id> <task_id>`
+
+- `<contest_id>/<task_id>/main.cpp` をコンパイル
+- `a.out` を生成
+- ac-companion が問題実行時に自動呼び出し
+
+### `cpp_run <contest_id> <task_id> [input_file]`
+
+- `a.out` を実行
+- `input_file` が指定されれば標準入力として使用
+- ac-companion のテスト実行に対応
+
+## Python 環境
+
+- **CPython 3.13**: 標準 Python インタプリタ（開発・デバッグ用）
+- **PyPy 3.10**: 高速実行用（本番テスト向け）
+
+両者は同じ `requirements.txt` に基づいて依存パッケージがインストールされます:
+- `sortedcontainers`
+
+### 依存パッケージの追加
+
+```bash
+# requirements.txt に追加
+echo "package_name" >> requirements.txt
+
+# インストール
+python3 -m pip install --user -r requirements.txt
+```
+
+## ローカル環境での構築（Dev Container 不使用）
+
+Dev Container を使わない場合は、以下の手順で同等の環境をホスト OS 上に構築できます。
+
+### 必要なツール
+
+```bash
+# Ubuntu/Debian の場合
+sudo apt-get update
+sudo apt-get install -y build-essential git cmake lld ninja-build \
+    bison flex libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
+    curl wget ca-certificates xz-utils ccache
+```
+
+### インストール手順
+
+```bash
+# 1. PyPy をインストール（非 root ユーザーで実行）
+bash .devcontainer/scripts/install_pypy
+
+# 2. GCC 15.2.0 + ac-library をインストール
+sudo AC_INSTALL_DIR=/opt/atcoder/gcc \
+     WORKSPACE_DIR="$(pwd)" \
+     bash .devcontainer/scripts/install_cpp
+
+# 3. Python 依存パッケージをインストール
+python3 -m pip install --user -r requirements.txt
+
+# 4. スクリプトに実行権限を付与
+chmod +x cpp_compile cpp_run
+
+# 5. シェルを再読み込み
+exec $SHELL
+```
+
+### PATH の設定
+
+`~/.bashrc` または `~/.zshrc` に以下を追加:
+
+```bash
+export PATH="$HOME/.local/pypy3/bin:$PATH"
+export PATH="/opt/atcoder/gcc/bin:$PATH"
+export LD_LIBRARY_PATH="/opt/atcoder/gcc/lib64:/opt/atcoder/gcc/lib:$LD_LIBRARY_PATH"
+```
+
+### 動作確認
+
+```bash
+g++ --version          # GCC 15.2.0 であることを確認
+pypy3 --version        # PyPy 3.10 であることを確認
+python3 -m pip list    # sortedcontainers がリストに含まれることを確認
+```
 
 ## トラブルシューティング
 
-- `g++` のバージョンが 15.2.0 になっていない  
-  PATH が `/opt/atcoder/gcc/bin` を指しているか確認し、必要ならコンテナを再構築してください。
-- ac-library が参照できない  
-  `/opt/atcoder/gcc/include/atcoder` が存在するか確認し、`install_cpp` を再実行します。
-- `pypy3` が見つからない  
-  シェルの初期化ファイルに PyPy の PATH 追加が入っているか、`install_pypy` 実行後にシェルを再読み込みしてください。
-- VS Code が C++ インテリセンスを解決できない  
-  Dev Container の設定で includePath が `/opt/atcoder/gcc/include` を指しているか確認してください。
+### `g++` が見つからない / バージョンが異なる
 
-この README を参考に、事前にログイン・テンプレート確認を済ませ、コンテストに集中できる環境を整えてください。
+```bash
+# PATH 確認
+which g++
+g++ --version
+
+# Dev Container の場合: コンテナを再構築
+# Dev Containers: Rebuild Container を実行
+
+# ローカルの場合: install_cpp を再実行
+sudo AC_INSTALL_DIR=/opt/atcoder/gcc bash .devcontainer/scripts/install_cpp
+```
+
+### ac-library が参照できない
+
+```bash
+# ヘッダファイルの確認
+ls /opt/atcoder/gcc/include/atcoder
+
+# 見つからない場合は再インストール
+sudo rm -rf /opt/atcoder/gcc/include/atcoder
+sudo AC_INSTALL_DIR=/opt/atcoder/gcc \
+     WORKSPACE_DIR="$(pwd)" \
+     bash .devcontainer/scripts/install_cpp
+```
+
+### `pypy3` が見つからない
+
+```bash
+# PyPy インストール位置確認
+ls ~/.local/pypy3/bin/pypy3
+
+# PATH 確認
+echo $PATH | grep pypy3
+
+# PATH に追加されていない場合: シェルを再起動
+exec $SHELL
+
+# それでも見つからない場合は再インストール
+bash .devcontainer/scripts/install_pypy
+```
+
+### VS Code で C++ インテリセンス（IntelliSense）が機能しない
+
+Dev Container の場合、`.devcontainer/devcontainer.json` で以下を確認:
+
+```json
+"C_Cpp.default.includePath": ["/opt/atcoder/gcc/include", "${workspaceFolder}/**"],
+"C_Cpp.default.compilerPath": "/opt/atcoder/gcc/bin/g++"
+```
+
+ローカル環境の場合は、VS Code の C/C++ 拡張設定（`.vscode/settings.json` など）で同等の設定を手動で追加してください。
+
+### コンテナ構築に失敗する
+
+```bash
+# コンテナイメージをリセット
+docker system prune -a
+
+# コンテナを再構築
+# Dev Containers: Rebuild Container を実行
+```
+
+## ac-companion 拡張との連携
+
+[ac-companion](https://github.com/ktsn-ud/ac-companion) は、AtCoder 問題の自動生成・テスト実行に対応した VS Code 拡張です。
+
+- 問題ファイルの自動生成
+- サンプルテスト（input/output）の自動化
+- `cpp_compile` / `cpp_run` との統合実行
+
+詳細は [ac-companion ドキュメント](https://github.com/ktsn-ud/ac-companion) を参照してください。
+
+## 参考
+
+- [AtCoder](https://atcoder.jp/)
+- [ac-library](https://atcoder.jp/documents/ac-library/)
+- [ac-companion](https://github.com/ktsn-ud/ac-companion)
