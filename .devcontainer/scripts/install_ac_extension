@@ -2,9 +2,9 @@
 set -euo pipefail
 
 OWNER="ktsn-ud"
-REPO="ac-companion-python"
+REPO="ac-companion"
 EXT_PUBLISHER="ktsn-ud"          # package.json の "publisher"
-EXT_NAME="ac-companion-python"   # package.json の "name"
+EXT_NAME="ac-companion"   # package.json の "name"
 
 : "${AC_EXT_VERSION:?AC_EXT_VERSION is required}"
 

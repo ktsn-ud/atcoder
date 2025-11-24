@@ -24,4 +24,5 @@ USER vscode
 # pipx 用の環境変数と PATH
 ENV PIPX_HOME=/home/vscode/.local/pipx
 ENV PIPX_BIN_DIR=/home/vscode/.local/bin
-ENV PATH=/workspaces/atcoder:${PIPX_BIN_DIR}:/home/vscode/.codon/bin:${PATH}
+ENV PATH=/opt/atcoder/gcc/bin:/workspaces/atcoder:${PIPX_BIN_DIR}:${PATH}
+ENV LD_LIBRARY_PATH=/opt/atcoder/gcc/lib64:/opt/atcoder/gcc/lib:${LD_LIBRARY_PATH:-}

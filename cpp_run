@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# C++実行スクリプト (ac-companion用)
+# Usage: cpp_run <contest_id> <task_id> [input_file]
+# input_file: 省略時は標準入力から、指定時はファイルから読み込む
+
+set -euo pipefail
+
+if [ $# -lt 2 ]; then
+    echo "Usage: cpp_run <contest_id> <task_id> [input_file]" >&2
+    exit 1
+fi
+
+CONTEST_ID="$1"
+TASK_ID="$2"
+INPUT_FILE="${3:-}"
+WORKSPACE_DIR="${WORKSPACE_DIR:-/workspaces/atcoder}"
+TASK_DIR="$WORKSPACE_DIR/$CONTEST_ID/$TASK_ID"
+
+if [ ! -f "$TASK_DIR/a.out" ]; then
+    echo "Error: a.out not found. Run cpp_compile first." >&2
+    exit 1
+fi
+
+cd "$TASK_DIR"
+
+if [ -n "$INPUT_FILE" ]; then
+    if [ ! -f "$INPUT_FILE" ]; then
+        echo "Error: Input file $INPUT_FILE not found" >&2
+        exit 1
+    fi
+    exec ./a.out < "$INPUT_FILE"
+else
+    exec ./a.out
+fi

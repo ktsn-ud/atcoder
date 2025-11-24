@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if command -v sudo >/dev/null 2>&1 && [ "$(id -u)" -ne 0 ]; then
+    SUDO="sudo"
+else
+    SUDO=""
+fi
+
+AC_VARIANT="${AC_VARIANT:-gcc}"
+AC_INSTALL_DIR="${AC_INSTALL_DIR:-/opt/atcoder/gcc}"
+AC_TEMP_DIR="${AC_TEMP_DIR:-/tmp/atcoder/gcc}"
+GCC_VERSION="${GCC_VERSION:-15.2.0}"
+WORKSPACE_DIR="${WORKSPACE_DIR:-/workspaces/atcoder}"
+PARALLEL=$(( $(nproc) + 2 ))
+
+echo "[install_cpp] variant=${AC_VARIANT} install_dir=${AC_INSTALL_DIR}"
+
+${SUDO} rm -rf "${AC_TEMP_DIR}"
+${SUDO} mkdir -p "${AC_TEMP_DIR}" "${AC_INSTALL_DIR}"
+${SUDO} chown "$(id -u)":"$(id -g)" "${AC_TEMP_DIR}"
+
+echo "[install_cpp] installing prerequisites"
+${SUDO} apt-get update
+${SUDO} DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    git cmake lld ninja-build pigz \
+    build-essential bison flex libgmp-dev libmpfr-dev libmpc-dev libisl-dev texinfo \
+    wget ca-certificates xz-utils ccache
+${SUDO} rm -rf /var/lib/apt/lists/*
+
+ENABLE_CCACHE=false
+if command -v ccache >/dev/null 2>&1; then
+    export CC="ccache gcc"
+    export CXX="ccache g++"
+    ENABLE_CCACHE=true
+fi
+echo "[install_cpp] ccache enabled=${ENABLE_CCACHE}"
+
+GCC_ARCHIVE="gcc-${GCC_VERSION}.tar.xz"
+GCC_URL="https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/${GCC_ARCHIVE}"
+echo "[install_cpp] downloading GCC ${GCC_VERSION} from ${GCC_URL}"
+cd "${AC_TEMP_DIR}"
+wget -qO "${GCC_ARCHIVE}" "${GCC_URL}"
+tar -xf "${GCC_ARCHIVE}"
+mkdir -p "gcc-${GCC_VERSION}-build"
+cd "gcc-${GCC_VERSION}-build"
+
+"../gcc-${GCC_VERSION}/configure" \
+    --prefix="${AC_INSTALL_DIR}" \
+    --enable-languages=c,c++ \
+    --disable-multilib \
+    --enable-lto \
+    --with-isl
+
+echo "[install_cpp] building GCC (parallel=${PARALLEL})"
+make -j"${PARALLEL}"
+echo "[install_cpp] installing GCC"
+${SUDO} make -j"${PARALLEL}" install-strip
+
+ACLIB_SRC="${WORKSPACE_DIR}/ac-library"
+if [ -d "${ACLIB_SRC}" ]; then
+    echo "[install_cpp] installing ac-library from ${ACLIB_SRC}"
+    ${SUDO} mkdir -p "${AC_INSTALL_DIR}/include/atcoder"
+    ${SUDO} rm -rf "${AC_INSTALL_DIR}/include/atcoder"
+    ${SUDO} mkdir -p "${AC_INSTALL_DIR}/include/atcoder"
+    ${SUDO} cp -r "${ACLIB_SRC}"/* "${AC_INSTALL_DIR}/include/atcoder/"
+else
+    echo "[install_cpp] warning: ac-library not found at ${ACLIB_SRC}" >&2
+fi
+
+${SUDO} mkdir -p /etc/atcoder
+echo "${AC_INSTALL_DIR}" | ${SUDO} tee /etc/atcoder/install_dir.txt >/dev/null
+
+echo "[install_cpp] cleaning temp directory"
+${SUDO} rm -rf "${AC_TEMP_DIR}"
+
+echo "[install_cpp] completed: $("${AC_INSTALL_DIR}/bin/g++" --version | head -n 1)"
+
+# Precompile bits/stdc++.h with matching compiler flags
+echo "[install_cpp] precompiling bits/stdc++.h"
+STDC_HEADER=$(find "${AC_INSTALL_DIR}/include/c++/${GCC_VERSION}" -name "stdc++.h" -path "*/bits/stdc++.h" | head -n 1)
+if [ -n "${STDC_HEADER}" ]; then
+    STDC_DIR=$(dirname "${STDC_HEADER}")
+    echo "[install_cpp] found stdc++.h at ${STDC_HEADER}"
+    cd "${STDC_DIR}"
+    ${SUDO} "${AC_INSTALL_DIR}/bin/g++" -std=gnu++23 -O2 -march=native stdc++.h
+    if [ -f "${STDC_DIR}/stdc++.h.gch" ]; then
+        echo "[install_cpp] successfully created ${STDC_DIR}/stdc++.h.gch"
+        ${SUDO} chmod 644 "${STDC_DIR}/stdc++.h.gch"
+    else
+        echo "[install_cpp] warning: failed to create precompiled header" >&2
+    fi
+else
+    echo "[install_cpp] warning: bits/stdc++.h not found" >&2
+fi
