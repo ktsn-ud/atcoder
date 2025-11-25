@@ -42,11 +42,12 @@
         }
     },
     "remoteUser": "vscode",
-    "updateContentCommand": "bash .devcontainer/scripts/install_pypy && bash .devcontainer/scripts/install_cpp && python3 -m pip install --user --no-cache-dir -r requirements.txt && chmod +x cpp_compile cpp_run",
+    "updateContentCommand": "(bash .devcontainer/scripts/install_pypy & bash .devcontainer/scripts/install_cpp) && python3 -m pip install --user --no-cache-dir -r requirements.txt && chmod +x cpp_compile cpp_run",
     "containerEnv": {
         "PIPX_BIN_DIR": "/home/vscode/.local/bin",
         "PIPX_HOME": "/home/vscode/.local/pipx",
         "PYPY_VERSION": "7.3.16",
+        "GCC_MAJOR_VERSION": "14",
         "AC_EXT_VERSION": "2.0.0",
         "ATCODER_CPP_INSTALL_DIR": "/opt/atcoder/gcc"
     },
