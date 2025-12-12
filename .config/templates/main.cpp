@@ -6,8 +6,9 @@ using ll = long long;
 
 template <typename T>
 inline void print_vec(const vector<T> &v, bool split_line = false) {
+    const char sep = split_line ? '\n' : ' ';
     for (int i = 0; i < (int)v.size(); i++) {
-        if (i) cout << ' ';
+        if (i) cout << sep;
         cout << v[i];
     }
     cout << '\n';
