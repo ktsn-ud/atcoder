@@ -48,7 +48,7 @@
         "PIPX_HOME": "/home/vscode/.local/pipx",
         "PYPY_VERSION": "7.3.16",
         "GCC_MAJOR_VERSION": "14",
-        "AC_EXT_VERSION": "2.0.1",
+        "AC_EXT_VERSION": "2.1.0",
         "ATCODER_CPP_INSTALL_DIR": "/opt/atcoder/gcc"
     },
     "remoteEnv": {
