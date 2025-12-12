@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu-24.04
 # ============================================================================
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates curl wget git build-essential \
-    bash-completion unzip zip jq locales \
+    bash-completion unzip zip jq locales gdb \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================================================
